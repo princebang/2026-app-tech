@@ -6,147 +6,144 @@
     <title>2026 앱테크 & 체험단 루틴 가이드</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React & Babel CDNs for browser-side execution -->
+    <!-- React & Babel CDNs -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Pretendard', sans-serif; }
-        .animate-in { animation: fadeIn 0.5s ease-out forwards; }
+        body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.025em; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #f8fafc; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+        
+        .tab-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
+        // 아이콘 안정성 강화 컴포넌트
         const Icon = ({ name, size = 16, className = "" }) => {
+            const iconRef = useRef(null);
             useEffect(() => {
-                if (window.lucide) {
+                if (window.lucide && iconRef.current) {
                     window.lucide.createIcons();
                 }
             }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+
+            return <i data-lucide={name} style={{ width: size, height: size }} className={`inline-block ${className}`}></i>;
         };
 
         const App = () => {
             const [activeTab, setActiveTab] = useState('apptech');
 
-            const apptechData = [
-                { 
-                    rank: 1, 
-                    name: "OCB 포인트 마블", 
-                    mission: "OCB 앱 > 포인트 마블 > 주사위 굴리기 & 건물 관리", 
-                    points: "32~95P+", 
-                    tag: "생활", 
-                    isSpecial: true,
-                    checklist: ["주사위 충전 시간(4시간) 알림 체크", "건물 파손 여부 상시 확인 및 즉시 보수", "황금열쇠 미션으로 추가 주사위 확보"]
-                },
-                { 
-                    rank: 2, 
-                    name: "해피포인트", 
-                    mission: "해피앱 > 혜택 > 해피오락실 게임 참여", 
-                    points: "10~70P", 
-                    tag: "게임", 
-                    isSpecial: true,
-                    checklist: ["햄스터 에너지 소진 전 주기적 접속", "랭킹 진입 시 추가 포인트 보상 체크", "앱 푸시 설정으로 이벤트 알림 수신"]
-                },
-                { 
-                    rank: 3, 
-                    name: "토스뱅크", 
-                    mission: "토스 앱 > 혜택 > 출석체크 & 만보기 적립", 
-                    points: "10~190P", 
-                    tag: "금융",
-                    checklist: ["자정 전 미적립 걸음수 반드시 확인", "주변 장소 방문 미션 동선 최적화", "공동구매 구경하기 등 숨은 미션 찾기"]
-                },
-                { 
-                    rank: 4, 
-                    name: "엘포인트", 
-                    mission: "L.POINT 앱 > 미션 > 출석/L.box & 게임 플레이", 
-                    points: "15~50P", 
-                    tag: "유통", 
-                    isSpecial: true,
-                    checklist: ["L.box 5시간마다 오픈 가능(알림 설정)", "물 마시기 미션으로 건강과 포인트 동시 적립", "연속 출석 보너스 포인트 정산 확인"]
-                },
-                { 
-                    rank: 5, 
-                    name: "KB스타뱅킹", 
-                    mission: "KB 앱 > 생활/혜택 > 국민오락실/별별퀴즈", 
-                    points: "150~270P", 
-                    tag: "금융", 
-                    isSpecial: true,
-                    checklist: ["별별퀴즈 매일 정답 공유방 확인", "걷기 포인트는 직접 '받기' 버튼 클릭 필수", "국민오락실 월간 랭킹 보상 챙기기"]
-                },
-                { 
-                    rank: 6, 
-                    name: "가스앱", 
-                    mission: "가스앱 > 오락실 > 출석/캐시적립 미션", 
-                    points: "10~30P", 
-                    tag: "생활", 
-                    isSpecial: true,
-                    checklist: ["자가검침 기간 내 검침 시 추가 캐시", "모인 캐시로 요금 감면 신청(매달 말)", "오락실 내 고단가 오퍼월 상시 체크"]
-                },
-                { 
-                    rank: 7, 
-                    name: "오베이", 
-                    mission: "푸시 알림 확인 > 설문 응답 완료", 
-                    points: "100~500P", 
-                    tag: "설문",
-                    checklist: ["설문 알림 즉시 참여(선착순 마감 주의)", "프로필 정보 최신화로 대상 설문 확대", "불성실 응답 시 패널 점수 하락 주의"]
-                },
-                { 
-                    rank: 8, 
-                    name: "한국리서치", 
-                    mission: "카톡/메일 설문 링크 접속 > 제출", 
-                    points: "500~3,000P", 
-                    tag: "설문",
-                    checklist: ["등록된 이메일 수시 확인 필수", "중단 설문도 소액 사례금 지급 확인", "좌담회 신청으로 고수익 기회 확보"]
-                },
-                { 
-                    rank: 9, 
-                    name: "캐시는내차지", 
-                    mission: "휴대폰 충전 시 나타나는 박스 클릭", 
-                    points: "100~500C", 
-                    tag: "생활",
-                    checklist: ["충전 케이블 연결 시 팝업 UI 확인", "적립 박스는 일정 시간 지나면 사라짐 주의", "배터리 최적화 예외 앱 설정 필수"]
-                },
-                { 
-                    rank: 10, 
-                    name: "엠브레인 패널파워", 
-                    mission: "패널파워 앱 > 조사 참여", 
-                    points: "50~2,000P", 
-                    tag: "설문",
-                    checklist: ["가입 초기 기초 조사로 포인트 확보", "추천인 이벤트 등 프로모션 활용", "현금 이체 시 수수료 확인 및 주기적 정산"]
-                },
-                { 
-                    rank: 11, 
-                    name: "시럽(Syrup)", 
-                    mission: "시럽 앱 > 야금야금 > 금돼지 잡기", 
-                    points: "200~500P", 
-                    tag: "생활",
-                    checklist: ["금돼지 잡기 일일 3회 제한 확인", "모은 포인트로 야금야금 금 투자 설정", "보관함 만기 쿠폰 자동 소멸 주의"]
-                }
-            ];
+            // 탭 전환 시 아이콘 재렌더링 강제 트리거
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [activeTab]);
 
-            const blogReviewers = [
+            const apptechData = useMemo(() => [
+                { 
+                    rank: 1, name: "OCB 포인트 마블", mission: "OCB 앱 > 포인트 마블 > 주사위 굴리기 & 건물 건설", 
+                    points: "32~95P+", tag: "생활", isSpecial: true,
+                    checklist: [
+                        "주사위 풀 충전(4시간) 알림 맞춰서 접속", 
+                        "건물 파손/방치 여부 수시로 확인하여 보수하기", 
+                        "황금열쇠 찬스 활용하여 보너스 주사위 수급"
+                    ]
+                },
+                { 
+                    rank: 2, name: "해피포인트", mission: "해피앱 > 혜택 > 해피오락실 게임 참여", 
+                    points: "10~70P", tag: "게임", isSpecial: true,
+                    checklist: [
+                        "올라올라 햄스터 일일 무료 티켓(횟수) 모두 소진", 
+                        "스코어 랭킹 진입 여부 확인 후 보너스 포인트 수령", 
+                        "해피오락실 내 신규 미니게임 업데이트 체크"
+                    ]
+                },
+                { 
+                    rank: 3, name: "토스뱅크", mission: "토스 앱 > 혜택 > 출석체크 & 만보기 적립", 
+                    points: "10~190P", tag: "금융",
+                    checklist: [
+                        "1만보 달성 후 반드시 자정 전 포인트 직접 클릭", 
+                        "브랜드 혜택 메뉴에서 '구경만 해도 주는 포인트' 수집", 
+                        "내 주변 장소 방문 미션 동선 확인 (편의점/공원 등)"
+                    ]
+                },
+                { 
+                    rank: 4, name: "엘포인트", mission: "L.POINT 앱 > 미션 > 출석/L.box & 게임 플레이", 
+                    points: "15~50P", tag: "유통", isSpecial: true,
+                    checklist: [
+                        "L.box 5시간 주기 알림 확인 후 즉시 오픈", 
+                        "게임 플레이 미션 완료 후 적립 버튼 터치 필수", 
+                        "물 마시기/만보기 미션 등 데일리 챌린지 병행"
+                    ]
+                },
+                { 
+                    rank: 5, name: "KB스타뱅킹", mission: "KB 앱 > 생활/혜택 > 국민오락실/별별퀴즈", 
+                    points: "150~270P", tag: "금융", isSpecial: true,
+                    checklist: [
+                        "7,000보 달성 후 리워드 직접 '받기' 완료하기", 
+                        "별별퀴즈 매일 오전 정답 공유방 확인하여 참여", 
+                        "국민오락실 월간 랭킹 보상 신청 기간 놓치지 않기"
+                    ]
+                },
+                { 
+                    rank: 6, name: "가스앱", mission: "가스앱 > 오락실 > 출석/캐시적립 미션", 
+                    points: "10~30P", tag: "생활", isSpecial: true,
+                    checklist: [
+                        "매달 자가검침 기간(약 3일간) 내 검침 참여하기", 
+                        "모인 캐시로 도시가스 요금 '캐시 결제' 미리 신청", 
+                        "오락실 미션으로 자투리 캐시 상시 적립"
+                    ]
+                },
+                { 
+                    rank: 7, name: "오베이", mission: "설문 알림 확인 > 응답 제출", 
+                    points: "100~500P", tag: "설문",
+                    checklist: ["알림 즉시 참여 (선착순 마감 주의)", "성실도 점수 관리로 고단가 설문 기회 확보"]
+                },
+                { 
+                    rank: 8, name: "한국리서치", mission: "카톡/메일 전용 링크 접속 > 응답", 
+                    points: "500~3,000P", tag: "설문",
+                    checklist: ["이메일/카톡 알림 수시 확인", "좌담회/전화 조사 대상자 신청으로 수익 극대화"]
+                },
+                { 
+                    rank: 9, name: "캐시는내차지", mission: "충전 케이블 연결 시 박스 클릭", 
+                    points: "100~500C", tag: "생활",
+                    checklist: ["충전 시작 시 나타나는 박스 UI 즉시 터치", "배터리 최적화 예외 설정으로 적립 박스 누락 방지"]
+                },
+                { 
+                    rank: 10, name: "엠브레인 패널파워", mission: "패널파워 앱 > 조사 목록 참여", 
+                    points: "50~2,000P", tag: "설문",
+                    checklist: ["기초 프로필 조사 완료", "현금 이체 최소 금액 확인 후 월간 정산"]
+                },
+                { 
+                    rank: 11, name: "시럽(Syrup)", mission: "시럽 앱 > 야금야금 > 금돼지 잡기", 
+                    points: "200~500P", tag: "생활",
+                    checklist: ["야금야금 금/은 실물 투자 전환 설정", "금돼지 일일 3회 잡기 미션 매일 체크"]
+                }
+            ], []);
+
+            const blogReviewers = useMemo(() => [
                 { name: "네이버 쇼핑체험", type: "쇼핑몰 리뷰", reward: "제품 0원 구매권", level: "보통", link: "https://shopping.naver.com/", tip: "쇼핑 > 무료체험 메뉴" },
                 { name: "카카오 쇼핑체험", type: "톡스토어 리뷰", reward: "배송비 포함 0원", level: "쉬움", link: "https://gift.kakao.com/", tip: "선물하기 > 체험단 탭" },
                 { name: "글로우픽 (Glow)", type: "뷰티 설문/리뷰", reward: "정품 화장품 협찬", level: "보통", link: "https://www.glowpick.com/?htab=index", tip: "앱 내 이벤트 메뉴 확인" },
                 { name: "화해 (Hwahae)", type: "화장품 꼼평단", reward: "신상 정품 무료", level: "보통", link: "https://www.hwahae.co.kr/?srsltid=AfmBOooOytLHDWO1uFzsJ_x73-RLkCvgEnSwyVfPMDghzO2lVkru4ytZ", tip: "이벤트 > 꼼평단 신청" },
                 { name: "리뷰노트", type: "블로그/인스타", reward: "제품 + 고료 (1~3만)", level: "보통", link: "https://www.reviewnote.co.kr/", tip: "현금 고료 캠페인 다수" }
-            ];
+            ], []);
 
             const getTagColor = (tag) => {
                 switch(tag) {
@@ -161,29 +158,28 @@
             };
 
             return (
-                <div className="min-h-screen pb-12">
-                    <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+                <div className="min-h-screen flex flex-col">
+                    <header className="bg-white border-b border-slate-200 sticky top-0 z-[100] shadow-sm">
                         <div className="max-w-5xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="bg-indigo-600 p-2 rounded-lg shadow-indigo-200 shadow-lg flex items-center justify-center">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-indigo-600 p-2.5 rounded-2xl shadow-lg shadow-indigo-100">
                                     <Icon name="trending-up" size={24} className="text-white" />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl font-bold tracking-tight">2026 앱테크 & 체험단 루틴</h1>
-                                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wide">Daily Profit Dashboard</p>
+                                    <h1 className="text-xl font-bold tracking-tight text-slate-900">2026 앱테크 & 체험단 루틴</h1>
+                                    <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Digital Sub-Profit Dashboard</p>
                                 </div>
                             </div>
-                            
-                            <nav className="flex bg-slate-100 p-1 rounded-xl">
+                            <nav className="flex bg-slate-100 p-1.5 rounded-2xl">
                                 <button 
                                     onClick={() => setActiveTab('apptech')}
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'apptech' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                    className={`tab-transition flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold ${activeTab === 'apptech' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                 >
                                     <Icon name="smartphone" size={16} /> 앱테크 루틴
                                 </button>
                                 <button 
                                     onClick={() => setActiveTab('reviewer')}
-                                    className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'reviewer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                    className={`tab-transition flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold ${activeTab === 'reviewer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                                 >
                                     <Icon name="gift" size={16} /> 체험단 루틴
                                 </button>
@@ -191,209 +187,185 @@
                         </div>
                     </header>
 
-                    <main className="max-w-5xl mx-auto px-4 mt-8">
-                        {activeTab === 'apptech' ? (
-                            <div className="space-y-8 animate-in">
-                                {/* Profit Info */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 p-6 rounded-3xl text-white shadow-xl">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="text-indigo-100 text-sm font-bold opacity-80 uppercase">Morning Habit</p>
-                                                <h3 className="text-3xl font-extrabold mt-1 tracking-tight">월 3~5만 원</h3>
+                    <main className="max-w-5xl w-full mx-auto px-4 mt-8 flex-grow">
+                        <div className="fade-in" key={activeTab}>
+                            {activeTab === 'apptech' ? (
+                                <div className="space-y-8 pb-16">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="bg-indigo-600 p-8 rounded-[32px] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                                            <div className="relative z-10">
+                                                <p className="text-indigo-100 text-xs font-bold uppercase tracking-wider mb-1">Morning Habit Profit</p>
+                                                <h3 className="text-4xl font-extrabold tracking-tight">월 3~5만 원</h3>
+                                                <p className="mt-4 text-[12px] text-indigo-50/80 leading-relaxed font-bold border-t border-white/10 pt-4">강조된 5대 핵심 앱(OCB, 해피, 엘포, KB, 가스)만 출퇴근길에 챙겨도 한 달 커피값 10잔은 충분히 방어합니다.</p>
                                             </div>
-                                            <div className="bg-white/20 p-2 rounded-xl">
-                                                <Icon name="trophy" size={24} className="text-white" />
-                                            </div>
+                                            <Icon name="award" size={80} className="absolute -right-4 -bottom-4 text-white/10 rotate-12" />
                                         </div>
-                                        <p className="mt-4 text-[11px] text-indigo-100 leading-relaxed font-bold border-t border-white/10 pt-4">
-                                            강조된 5개 앱만 출퇴근길에 꾸준히 해도 한 달 커피값 10잔은 충분히 방어합니다.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="text-slate-400 text-sm font-bold uppercase">Full Routine</p>
-                                                <h3 className="text-3xl font-extrabold mt-1 text-slate-800 tracking-tight">월 15~20만 원+</h3>
+                                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                                            <div className="relative z-10">
+                                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Full Routine Target</p>
+                                                <h3 className="text-4xl font-extrabold text-slate-800 tracking-tight">월 15~20만 원+</h3>
+                                                <p className="mt-4 text-[12px] text-slate-500 leading-relaxed font-bold border-t border-slate-50 pt-4">설문조사와 전문 리서치, 자동 적립형 앱까지 전체 가동 시 기대 수익입니다. 알림 즉시 확인이 핵심입니다.</p>
                                             </div>
-                                            <div className="bg-yellow-50 p-2 rounded-xl">
-                                                <Icon name="coins" size={24} className="text-yellow-500" />
-                                            </div>
+                                            <Icon name="coins" size={80} className="absolute -right-4 -bottom-4 text-slate-50 rotate-12" />
                                         </div>
-                                        <p className="mt-4 text-[11px] text-slate-500 leading-relaxed font-bold border-t border-slate-50 pt-4">
-                                            설문조사와 좌담회까지 참여할 경우의 기대 수익입니다. 고단가 조사는 알림 즉시 확인하세요.
-                                        </p>
                                     </div>
-                                </div>
 
-                                {/* Main Table */}
-                                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                                        <h2 className="font-bold flex items-center gap-2 text-slate-800 tracking-tight text-lg">
-                                            <Icon name="smartphone" size={22} className="text-indigo-600" /> 필수 앱테크 실전 가이드
-                                        </h2>
-                                        <div className="hidden sm:flex items-center gap-2">
-                                            <span className="text-[10px] font-bold bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full uppercase">Full Checklist</span>
+                                    <div className="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
+                                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+                                            <h2 className="font-extrabold flex items-center gap-2.5 text-slate-800 text-xl tracking-tight">
+                                                <Icon name="check-circle" size={22} className="text-indigo-600" /> 필수 앱테크 실전 가이드
+                                            </h2>
+                                            <div className="hidden sm:flex items-center gap-2">
+                                                <span className="text-[10px] font-bold bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full border border-indigo-100 uppercase tracking-widest">2026 Strategy</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left border-collapse min-w-[850px]">
-                                            <thead>
-                                                <tr className="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
-                                                    <th className="px-4 py-4 text-center">No</th>
-                                                    <th className="px-6 py-4">앱 이름 / 태그</th>
-                                                    <th className="px-6 py-4">미션 상세 경로</th>
-                                                    <th className="px-6 py-4">보상</th>
-                                                    <th className="px-6 py-4">실전 체크리스트</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {apptechData.map((app) => (
-                                                    <tr key={app.rank} className={`hover:bg-slate-50/50 transition-colors ${app.isSpecial ? 'bg-indigo-50/20' : ''}`}>
-                                                        <td className="px-4 py-6 text-center">
-                                                            <span className={`inline-flex items-center justify-center w-8 h-8 rounded-xl font-bold text-xs ${app.rank <= 5 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-500'}`}>
-                                                                {app.rank}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-6 py-6 text-sm">
-                                                            <div className="flex flex-col">
-                                                                <span className="font-bold text-slate-800 tracking-tight text-base">{app.name}</span>
-                                                                <div className="flex flex-wrap gap-1 mt-1.5">
-                                                                    <span className={`inline-block px-1.5 py-0.5 rounded-[4px] text-[9px] w-fit font-bold ${getTagColor(app.tag)}`}>
-                                                                        {app.tag}
-                                                                    </span>
-                                                                    {app.isSpecial && (
-                                                                        <span className="inline-block px-1.5 py-0.5 rounded-[4px] text-[9px] w-fit font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">
-                                                                            🎮 게임 추천
-                                                                        </span>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse min-w-[900px]">
+                                                <thead>
+                                                    <tr className="bg-slate-50/50 text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
+                                                        <th className="px-6 py-5 text-center w-16">No</th>
+                                                        <th className="px-8 py-5">앱 이름 / 카테고리</th>
+                                                        <th className="px-8 py-5">미션 경로 (Action)</th>
+                                                        <th className="px-6 py-5">기대 보상</th>
+                                                        <th className="px-8 py-5">실전 체크리스트 & 공략</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {apptechData.map((app) => (
+                                                        <tr key={app.rank} className={`hover:bg-slate-50 transition-colors ${app.isSpecial ? 'bg-indigo-50/20' : ''}`}>
+                                                            <td className="px-6 py-8 text-center">
+                                                                <span className={`inline-flex items-center justify-center w-9 h-9 rounded-2xl font-extrabold text-sm ${app.rank <= 5 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-100' : 'bg-slate-100 text-slate-500'}`}>
+                                                                    {app.rank}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-8 py-8">
+                                                                <div className="flex flex-col">
+                                                                    <span className="font-extrabold text-slate-800 tracking-tight text-lg leading-none">{app.name}</span>
+                                                                    <div className="flex flex-wrap gap-1.5 mt-2.5">
+                                                                        <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] w-fit font-bold ${getTagColor(app.tag)}`}>{app.tag}</span>
+                                                                        {app.isSpecial && <span className="inline-block px-2 py-0.5 rounded-md text-[10px] w-fit font-bold bg-yellow-100 text-yellow-700 border border-yellow-200">🎮 게임 추천</span>}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className={`px-8 py-8 text-[13px] font-bold leading-relaxed max-w-[240px] ${app.isSpecial ? 'text-indigo-900' : 'text-slate-600'}`}>{app.mission}</td>
+                                                            <td className="px-6 py-8"><span className="text-base font-black text-indigo-600 whitespace-nowrap">{app.points}</span></td>
+                                                            <td className="px-8 py-8">
+                                                                <div className="flex flex-col gap-3 min-w-[320px]">
+                                                                    {app.checklist && (
+                                                                        <ul className="bg-white/90 p-4 rounded-3xl border border-indigo-50 space-y-2 shadow-sm">
+                                                                            {app.checklist.map((item, i) => (
+                                                                                <li key={i} className="text-[11px] text-indigo-900 font-bold flex items-start gap-2 leading-snug">
+                                                                                    <Icon name="check-circle-2" size={13} className="text-indigo-500 mt-0.5 shrink-0" /> {item}
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
                                                                     )}
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className={`px-6 py-6 text-[12px] font-bold leading-relaxed max-w-[200px] ${app.isSpecial ? 'text-indigo-900' : 'text-slate-600'}`}>
-                                                            {app.mission}
-                                                        </td>
-                                                        <td className="px-6 py-6">
-                                                            <span className="text-sm font-extrabold text-indigo-600 whitespace-nowrap">{app.points}</span>
-                                                        </td>
-                                                        <td className="px-6 py-6">
-                                                            <div className="flex flex-col gap-3 min-w-[280px]">
-                                                                {app.checklist && (
-                                                                    <ul className="bg-white/80 p-3 rounded-2xl border border-indigo-50 space-y-1.5 shadow-sm">
-                                                                        {app.checklist.map((item, i) => (
-                                                                            <li key={i} className="text-[10px] text-indigo-800 font-bold flex items-start gap-1.5 leading-tight">
-                                                                                <Icon name="check-circle" size={12} className="text-indigo-500 mt-0.5 shrink-0" />
-                                                                                {item}
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-8 animate-in">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="bg-gradient-to-br from-purple-600 to-purple-700 p-8 rounded-3xl text-white shadow-xl">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <p className="text-purple-100 text-sm font-bold opacity-80 uppercase"> 협찬 리워드 가치</p>
-                                                <h3 className="text-3xl font-extrabold mt-1 tracking-tight">월 30~70만 원+</h3>
+                            ) : (
+                                <div className="space-y-8 pb-16">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="bg-purple-600 p-8 rounded-[32px] text-white shadow-xl shadow-purple-100">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="text-purple-100 text-xs font-bold opacity-80 uppercase tracking-wider mb-1">Benefit Value</p>
+                                                    <h3 className="text-4xl font-extrabold tracking-tight">월 30~70만 원+</h3>
+                                                </div>
+                                                <div className="bg-white/20 p-2 rounded-xl"><Icon name="gift" size={24} className="text-white" /></div>
                                             </div>
-                                            <Icon name="gift" size={32} className="text-purple-200 opacity-50" />
+                                            <p className="mt-4 text-[12px] text-purple-50/80 leading-relaxed font-bold border-t border-white/10 pt-4">맛집 식사권, 생활 가전, 화장품 등 실물 협찬의 평균적인 가치입니다. 부지런한 신청이 답입니다.</p>
                                         </div>
-                                        <p className="mt-4 text-xs text-purple-100 leading-relaxed font-bold border-t border-white/10 pt-4">
-                                            맛집 식사권, 생활 가전, 화장품 등 실물 제품 및 서비스 협찬의 평균 가치입니다.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4">
-                                        <div className="bg-emerald-100 p-5 rounded-2xl text-emerald-600 flex items-center justify-center">
-                                            <Icon name="shopping-bag" size={28} />
-                                        </div>
-                                        <div>
-                                            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">Recommended</p>
-                                            <h4 className="text-xl font-extrabold text-slate-800 tracking-tight mt-0.5">최우수 체험단 리스트</h4>
+                                        <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm flex items-center gap-5">
+                                            <div className="bg-emerald-100 p-6 rounded-[24px] text-emerald-600 flex items-center justify-center shrink-0">
+                                                <Icon name="shopping-bag" size={32} />
+                                            </div>
+                                            <div>
+                                                <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest">Selected List</p>
+                                                <h4 className="text-xl font-black text-slate-800 tracking-tight mt-0.5">베스트 체험단 리스트</h4>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                                    <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                                        <h2 className="font-bold flex items-center gap-2 text-slate-800 tracking-tight text-lg">
-                                            <Icon name="gift" size={22} className="text-purple-600" /> 추천 체험단 플랫폼
-                                        </h2>
-                                        <span className="text-[10px] font-bold bg-purple-100 text-purple-600 px-3 py-1 rounded-full uppercase tracking-wider">Verified 2026</span>
-                                    </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left border-collapse min-w-[750px]">
-                                            <thead>
-                                                <tr className="bg-slate-50 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
-                                                    <th className="px-6 py-4">플랫폼명</th>
-                                                    <th className="px-6 py-4">유형</th>
-                                                    <th className="px-6 py-4">주요 보상</th>
-                                                    <th className="px-6 py-4">난이도</th>
-                                                    <th className="px-6 py-4">경로/팁</th>
-                                                    <th className="px-4 py-4 text-center">이동</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-slate-100">
-                                                {blogReviewers.map((item, idx) => (
-                                                    <tr key={idx} className="hover:bg-slate-50 transition-colors">
-                                                        <td className="px-6 py-6 font-bold text-slate-800 text-base">{item.name}</td>
-                                                        <td className="px-6 py-6 text-xs text-slate-500 font-bold">{item.type}</td>
-                                                        <td className="px-6 py-6 text-xs font-extrabold text-purple-600">{item.reward}</td>
-                                                        <td className="px-6 py-6">
-                                                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${item.level === '쉬움' ? 'bg-green-100 text-green-600' : item.level === '보통' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
-                                                                {item.level}
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-6 py-6 text-[11px] text-slate-400 font-bold italic">{item.tip}</td>
-                                                        <td className="px-4 py-6 text-center">
-                                                            <a href={item.link} target="_blank" className="text-slate-300 hover:text-purple-600 transition-colors inline-block bg-slate-50 p-2 rounded-lg">
-                                                                <Icon name="external-link" size={18} />
-                                                            </a>
-                                                        </td>
+                                    <div className="bg-white rounded-[32px] shadow-sm border border-slate-200 overflow-hidden">
+                                        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+                                            <h2 className="font-extrabold flex items-center gap-2.5 text-slate-800 text-xl tracking-tight">
+                                                <Icon name="award" size={22} className="text-purple-600" /> 엄선된 체험단 플랫폼
+                                            </h2>
+                                            <span className="text-[10px] font-bold bg-purple-100 text-purple-600 px-4 py-1.5 rounded-full uppercase tracking-widest">Verified List</span>
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse min-w-[800px]">
+                                                <thead>
+                                                    <tr className="bg-slate-50/50 text-slate-400 text-[11px] font-bold uppercase tracking-[0.1em]">
+                                                        <th className="px-8 py-5">플랫폼명</th>
+                                                        <th className="px-8 py-5">채널 유형</th>
+                                                        <th className="px-8 py-5">보상 혜택</th>
+                                                        <th className="px-6 py-5">난이도</th>
+                                                        <th className="px-8 py-5">참여 경로 / 팁</th>
+                                                        <th className="px-6 py-5 text-center">공식 링크</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100">
+                                                    {blogReviewers.map((item, idx) => (
+                                                        <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                                                            <td className="px-8 py-8 font-extrabold text-slate-800 text-lg leading-none tracking-tight">{item.name}</td>
+                                                            <td className="px-8 py-8 text-xs text-slate-500 font-bold">{item.type}</td>
+                                                            <td className="px-8 py-8 text-[13px] font-black text-purple-600">{item.reward}</td>
+                                                            <td className="px-6 py-8">
+                                                                <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold ${item.level === '쉬움' ? 'bg-green-100 text-green-600' : item.level === '보통' ? 'bg-blue-100 text-blue-600' : 'bg-red-100 text-red-600'}`}>
+                                                                    {item.level}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-8 py-8 text-[12px] text-slate-400 font-bold italic tracking-tight">{item.tip}</td>
+                                                            <td className="px-6 py-8 text-center">
+                                                                <a href={item.link} target="_blank" className="text-slate-300 hover:text-purple-600 transition-all inline-block bg-slate-50 p-3 rounded-2xl hover:bg-white hover:shadow-md border border-transparent hover:border-purple-100">
+                                                                    <Icon name="external-link" size={20} />
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </main>
 
-                    <footer className="max-w-5xl mx-auto px-4 mt-12 text-center">
-                        <div className="bg-indigo-50 border border-indigo-100 p-10 rounded-[40px] shadow-sm">
-                            <h4 className="font-extrabold text-indigo-900 mb-2 text-xl tracking-tight">가이드가 도움이 되셨나요?</h4>
-                            <p className="text-sm text-indigo-700/70 mb-8 leading-relaxed font-bold">
-                                커뮤니티와 단톡방에 공유해서 더 많은 사람들과 함께 시작해 보세요.<br/>
-                                티끌 모아 태산, 꾸준함이 최고의 재테크입니다.
-                            </p>
-                            
-                            <div className="bg-white p-8 rounded-[32px] shadow-lg shadow-indigo-100/50 border border-indigo-100 inline-block w-full max-w-lg">
-                                <p className="text-sm font-extrabold text-slate-800 mb-6 flex items-center justify-center gap-2">
-                                    <Icon name="message-circle" size={20} className="text-indigo-600" /> 궁금한 사항은 편히 문의주세요!
-                                </p>
-                                <div className="flex flex-wrap justify-center gap-3">
-                                    <button className="bg-indigo-600 text-white px-8 py-3 rounded-2xl text-sm font-bold shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all flex items-center gap-2">
-                                        문의하기 / 질문하기
-                                    </button>
-                                    <button className="bg-slate-50 text-indigo-600 px-8 py-3 rounded-2xl text-sm font-bold border border-indigo-100 hover:bg-white transition-all flex items-center gap-2">
-                                        <Icon name="plus-circle" size={16} /> 추가 사항 제안
-                                    </button>
+                    <footer className="max-w-5xl mx-auto px-4 mt-4 mb-16 text-center">
+                        <div className="bg-indigo-50 border border-indigo-100 p-12 rounded-[56px] shadow-sm relative overflow-hidden">
+                            <div className="relative z-10">
+                                <h4 className="font-black text-indigo-900 mb-2 text-2xl tracking-tight leading-none">가이드가 도움이 되셨나요?</h4>
+                                <p className="text-base text-indigo-700/60 mb-10 leading-relaxed font-bold">커뮤니티와 단톡방에 공유해서 더 많은 사람들과 함께 시작해 보세요.<br/>티끌 모아 태산, 꾸준함이 최고의 재테크입니다.</p>
+                                
+                                <div className="bg-white p-8 rounded-[40px] shadow-2xl shadow-indigo-200/50 border border-indigo-100 inline-block w-full max-w-lg">
+                                    <p className="text-[15px] font-black text-slate-800 mb-6 flex items-center justify-center gap-2">
+                                        <Icon name="message-circle" size={20} className="text-indigo-600" /> 궁금한 사항은 편히 문의주세요!
+                                    </p>
+                                    <div className="flex flex-wrap justify-center gap-4">
+                                        <button className="bg-indigo-600 text-white px-10 py-4 rounded-[20px] text-base font-bold shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:scale-[1.02] transition-all flex items-center gap-2.5">
+                                            문의하기 / 질문하기
+                                        </button>
+                                        <button className="bg-slate-50 text-indigo-600 px-10 py-4 rounded-[20px] text-base font-bold border border-indigo-100 hover:bg-white hover:scale-[1.02] transition-all flex items-center gap-2.5">
+                                            <Icon name="plus-circle" size={18} /> 추가 제안
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                            <Icon name="sparkles" size={120} className="absolute -left-10 -bottom-10 text-indigo-100/50 rotate-12" />
+                            <Icon name="smile" size={120} className="absolute -right-10 -top-10 text-indigo-100/50 -rotate-12" />
                         </div>
-                        <div className="mt-10 flex flex-col items-center gap-3 text-slate-400">
-                            <Icon name="shield-alert" size={16} />
-                            <p className="text-[10px] uppercase tracking-widest font-extrabold text-slate-400/70 italic">2026 Smart Finance Guide • Created for Social Share</p>
+                        <div className="mt-12 flex flex-col items-center gap-4 text-slate-300">
+                            <Icon name="shield-check" size={20} />
+                            <p className="text-[11px] uppercase tracking-[0.3em] font-black text-slate-400/60 italic">2026 Smart Finance Guide • Verified For Public Share</p>
                         </div>
                     </footer>
                 </div>
